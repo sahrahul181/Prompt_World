@@ -1,61 +1,19 @@
-"use client";
+import Feed from "@/components/Feed";
 
-import { useSession } from "next-auth/react";
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+const Home = () => (
+  <section className="w-full flex-center flex-col">
+    <h1 className="head_text text-center">
+      Discover & Share
+      <br className="max-md:hidden" />
+      <span className="orange_gradient text-center"> AI-Powered Prompts</span>
+    </h1>
+    <p className="desc text-center">
+      Promptopia is an open-source AI prompting tool for modern world to
+      discover, create and share creative prompts
+    </p>
 
-import Profile from "@components/Profile";
+    <Feed />
+  </section>
+);
 
-const MyProfile = () => {
-  const router = useRouter();
-  const { data: session } = useSession();
-
-  const [myPosts, setMyPosts] = useState([]);
-
-  useEffect(() => {
-    const fetchPosts = async () => {
-      const response = await fetch(`/api/users/${session?.user.id}/posts`);
-      const data = await response.json();
-
-      setMyPosts(data);
-    };
-
-    if (session?.user.id) fetchPosts();
-  }, [session?.user.id]);
-
-  const handleEdit = (post) => {
-    router.push(`/update-prompt?id=${post._id}`);
-  };
-
-  const handleDelete = async (post) => {
-    const hasConfirmed = confirm(
-      "Are you sure you want to delete this prompt?"
-    );
-
-    if (hasConfirmed) {
-      try {
-        await fetch(`/api/prompt/${post._id.toString()}`, {
-          method: "DELETE",
-        });
-
-        const filteredPosts = myPosts.filter((item) => item._id !== post._id);
-
-        setMyPosts(filteredPosts);
-      } catch (error) {
-        console.log(error);
-      }
-    }
-  };
-
-  return (
-    <Profile
-      name='My'
-      desc='Welcome to your personalized profile page. Share your exceptional prompts and inspire others with the power of your imagination'
-      data={myPosts}
-      handleEdit={handleEdit}
-      handleDelete={handleDelete}
-    />
-  );
-};
-
-export default MyProfile;
+export default Home;
